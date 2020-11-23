@@ -11,13 +11,13 @@ const jwt = require('jsonwebtoken');
 
 const registerValidator = [
 
-    check('name').exists(),
-    check('contraseña', 'contraseña es necesaria').exists(),
-    check('age').exists(),
-    check('email').isEmail(),
-    check('cp').exists(),
-    check('phone').exists(),
-    check('country').exists(),
+    check('user.name').exists(),
+    check('user.contraseña', 'contraseña es necesaria').exists(),
+    check('user.age').exists(),
+    check('user.email').isEmail(),
+    check('user.cp').exists(),
+    check('user.phone').exists(),
+    check('user.country').exists(),
 
 ];
 
@@ -101,12 +101,12 @@ async function update_user(req, res) {
             if(usu2.admin===true){
     
                 let respuesta = await commit(usuario);
-                return res.status(400).send(JSON.stringify({message:"Actualizado correctamente",respuesta}));
+                return res.status(200).send(JSON.stringify({message:"Actualizado correctamente",respuesta}));
     
             }else{
     
                 let respuesta = await commit(usuario);
-                return res.status(400).send(JSON.stringify({message:"Actualizado correctamente",respuesta}));
+                return res.status(200).send(JSON.stringify({message:"Actualizado correctamente",respuesta}));
     
             }
         } catch (err) {
@@ -144,7 +144,7 @@ async function add_User(req, res) {
                 }else{
     
                     let respuesta = await add(usuario);
-                    return res.status(400).send(JSON.stringify({message:"El usuario a sido registrado correctamente ", respuesta}));
+                    return res.status(200).send(JSON.stringify({message:"El usuario a sido registrado correctamente ", respuesta}));
     
                 }
     
@@ -171,14 +171,14 @@ function create_Object_User(datos){
 
     let usuario = new Users();
 
-        usuario.setid(datos.id);
-        usuario.setname(datos.name);
-        usuario.setcontraseña(datos.contraseña);
-        usuario.setage(datos.age);
-        usuario.setcountry(datos.country);
-        usuario.setcp(datos.cp);
-        usuario.setphone(datos.phone);
-        usuario.setemail(datos.email);
+        usuario.setid(datos.user.id);
+        usuario.setname(datos.user.name);
+        usuario.setcontraseña(datos.user.contraseña);
+        usuario.setage(datos.user.age);
+        usuario.setcountry(datos.user.country);
+        usuario.setcp(datos.user.cp);
+        usuario.setphone(datos.user.phone);
+        usuario.setemail(datos.user.email);
         return usuario;
 
 }
@@ -192,10 +192,11 @@ async function check_User(req, res) {
       return res.status(422).json({ errors: errors.array() });
     }else{
 
+        let datos = req.body.user;
         let usuario = new Users();
-    
-        usuario.setname(req.query.name);
-        usuario.setcontraseña(req.query.password);
+        
+        usuario.setname(datos.name);
+        usuario.setcontraseña(datos.password);
         let respuesta = await retrieve(usuario);
     
         if(respuesta !== null){
@@ -203,7 +204,7 @@ async function check_User(req, res) {
             let token = await check_Password(usuario, respuesta);
             if(token !== false){
     
-                return res.status(400).send(JSON.stringify({message: "Datos correctos", respuesta, token}));
+                return res.status(200).send(JSON.stringify({message: "Datos correctos", respuesta, token}));
     
             }else{
     

@@ -18,7 +18,7 @@ app.get('/',(req, res) =>{
 
 });*/
 
-app.get('/auth', check_User);
+app.post('/auth', check_User);
 
 //Registro de un nuevo usuario
 
