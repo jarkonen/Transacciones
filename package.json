@@ -9,14 +9,14 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/jarkonen/API-Rest-transactions.git"
+    "url": "git+https://github.com/jarkonen/Transacciones.git"
   },
   "author": "Fernando Pascual",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/jarkonen/API-Rest-transactions/issues"
+    "url": "https://github.com/jarkonen/Transacciones/issues"
   },
-  "homepage": "https://github.com/jarkonen/API-Rest-transactions#readme",
+  "homepage": "https://github.com/jarkonen/Transacciones#readme",
   "dependencies": {
     "bcrypt": "^5.0.0",
     "chai": "^4.2.0",
