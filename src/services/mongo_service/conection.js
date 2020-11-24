@@ -1,8 +1,9 @@
 'use strict'
 
 import {MongoClient} from 'mongodb';
+require ('dotenv').config();
 
-const uri = "mongodb+srv://Jarkonen:mongoseña7@cluster0.anskl.mongodb.net/APIRest?retryWrites=true&w=majority";
+const uri = "mongodb+srv://Jarkonen:"+process.env.MONGO+"@cluster0.anskl.mongodb.net/APIRest?retryWrites=true&w=majority";
 let mclient;
 
 async function conect(database, collection_Insert) {

@@ -1,18 +1,8 @@
 'use strict'
 import {app} from './app.js';
-import {rutasProtegidas} from './services/security_services/security/protectedroutes.js';
-import {check_User, update_user, delete_User, add_User, registerValidator, updateValidator, deleteValidator} from './controller/controller.users/users.methods';
-import {new_transaction, validate_Transaction, reject_Transaction, newTransValidator, validateTransValidator, rejectTransValidator} from './controller/controller.transactions/transactions.methods';
+require ('dotenv').config();
 
-const port = 4000;
-
-/*app.get('/',(req, res) =>{
-
-    res.status(200).send(JSON.stringify({
-        message : "Hola mundo"
-    }));
-
-});*/
+const port = process.env.PORT || 4000;
 
 app.listen(4000, () => {
 
@@ -20,8 +10,5 @@ app.listen(4000, () => {
 
 });
 
-//Autentificacion de usuarios
-
-//app.get('/auth', check_User);
 
 

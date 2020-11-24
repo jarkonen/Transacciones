@@ -4,7 +4,7 @@ const scriptName = path.basename(__filename).replace('.js', '');
 
 module.exports = async it => {
 
-    const responseRegisterTrue = request('POST', 'http://localhost:4000/users/new', {
+    const responseRegisterSuccessfully = request('POST', 'http://localhost:4000/users/new', {
         
         'json': {    
             'user': {
@@ -20,7 +20,7 @@ module.exports = async it => {
           }
       });
 
-    it(scriptName, () => it.eq(responseRegisterTrue.statusCode, 200));
+    it(scriptName + " responseRegisterSuccessfully", () => it.eq(responseRegisterSuccessfully.statusCode, 200));
     
     //verificando add_user
     const responseRegisterDuplicateUser = request('POST', 'http://localhost:4000/users/new', {
@@ -39,9 +39,9 @@ module.exports = async it => {
           }
       });
 
-    it(scriptName, () => it.eq(responseRegisterDuplicateUser.statusCode, 400));
+    it(scriptName + " responseRegisterDuplicateUser", () => it.eq(responseRegisterDuplicateUser.statusCode, 400));
 
-    const responseRegisterValidatedatauser = request('POST', 'http://localhost:4000/users/new', {
+    const responserRegisterWithIncompleteData = request('POST', 'http://localhost:4000/users/new', {
         
         'json': {    
             'user': {
@@ -57,9 +57,9 @@ module.exports = async it => {
           }
       });
 
-    it(scriptName, () => it.eq(responseRegisterValidatedatauser.statusCode, 422));
+    it(scriptName + " responserRegisterWithIncompleteData", () => it.eq(responserRegisterWithIncompleteData.statusCode, 422));
 
-    const responseAuth = request('POST', 'http://localhost:4000/auth', {
+    const responseAuthSuccessfully = request('POST', 'http://localhost:4000/auth', {
         'json': {    
             "user": {
               "name": "jarkonen", 
@@ -70,7 +70,7 @@ module.exports = async it => {
 
     const token = JSON.parse(responseAuth.getBody()).token;
     const id = JSON.parse(responseAuth.getBody()).respuesta._id;
-    it(scriptName, () => it.eq(responseAuth.statusCode, 200));
+    it(scriptName + " responseAuthSuccessfully", () => it.eq(responseAuthSuccessfully.statusCode, 200));
 
     const responseAuthFailed = request('POST', 'http://localhost:4000/auth', {
         'json': {    
@@ -81,10 +81,9 @@ module.exports = async it => {
           }
       });
 
-      it(scriptName, () => it.eq(responseAuthFailed.statusCode, 400));
+      it(scriptName + " responseAuthFailed", () => it.eq(responseAuthFailed.statusCode, 400));
 
-      //no actualiza en la bbdd mirar porque
-    const responseUpdateUser = request('POST', 'http://localhost:4000/users/update', {
+    const responseUpdateUserSuccessfully = request('POST', 'http://localhost:4000/users/update', {
         'headers': {
             'Access-token': token
         },
@@ -92,6 +91,26 @@ module.exports = async it => {
             'user': {
 
                 "id": id,
+                "name": "lololo",
+                "email": "yosoybatman@gmail.com",
+                "phone": "si",
+                "cp": "cualquiera",
+                "country": "gotham",
+                "age": "indeterminada"
+
+            }
+          }
+      });
+
+    it(scriptName + " responseUpdateUserSuccessfully", () => it.eq(responseUpdateUserSuccessfully.statusCode, 200));
+
+    const responseUpdateValidateDataUser = request('POST', 'http://localhost:4000/users/update', {
+        'headers': {
+            'Access-token': token
+        },
+        'json': {    
+            'user': {
+
                 "name": "pimpampum",
                 "email": "yosoybatman@gmail.com",
                 "phone": "si",
@@ -103,9 +122,9 @@ module.exports = async it => {
           }
       });
 
-    it(scriptName, () => it.eq(responseUpdateUser.statusCode, 200));
+    it(scriptName + " responseUpdateValidateDataUser", () => it.eq(responseUpdateValidateDataUser.statusCode, 422));
 
-    const responseDeleteUser = request('POST', 'http://localhost:4000/users/delete', {
+    const responseDeleteUserSuccessfully = request('POST', 'http://localhost:4000/users/delete', {
         'headers': {
             'Access-token': token
         },
@@ -118,5 +137,19 @@ module.exports = async it => {
           }
       });
 
-    it(scriptName, () => it.eq(responseDeleteUser.statusCode, 200));
+    it(scriptName + " responseDeleteUserSuccessfully", () => it.eq(responseDeleteUserSuccessfully.statusCode, 200));
+
+    const responseDeleteValidateDataUser = request('POST', 'http://localhost:4000/users/delete', {
+        'headers': {
+            'Access-token': token
+        },
+        'json': {    
+            'user': {
+
+
+            }
+          }
+      });
+
+    it(scriptName + " responseDeleteValidateDataUser", () => it.eq(responseDeleteValidateDataUser.statusCode, 422));
 }
