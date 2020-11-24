@@ -8,22 +8,22 @@ const {check, validationResult} = require('express-validator');
 
 const newTransValidator = [
 
-    check('id_sender').exists(),
-    check('id_reciver').exists(),
-    check('amount').exists(),
+    check('transaction.id_sender').exists(),
+    check('transaction.id_reciver').exists(),
+    check('transaction.amount').exists(),
 
 ];
 
 const validateTransValidator = [
 
-    check('id_transaction').exists(),
+    check('transaction.id_transaction').exists(),
     check('token').exists(),
 
 ];
 
 const rejectTransValidator = [
 
-    check('id_transaction').exists(),
+    check('transaction.id_transaction').exists(),
     check('token').exists(),
 
 ];
@@ -32,7 +32,7 @@ const rejectTransValidator = [
 
 async function reject_Transaction(req, res) {
 
-    let transac = await retrievetransactionbyid(req.body.id_transaction);
+    let transac = await retrievetransactionbyid(req.body.transaction.id_transaction);
     let id_user = await retrieve_id_user_token(req.body.token);
     let usu = await retrieveadmin(id_user);
     if(usu.admin == true){
@@ -65,7 +65,7 @@ async function validate_Transaction(req, res) {
       return res.status(422).json({ errors: errors.array() });
     }else{
 
-        let transac = await retrievetransactionbyid(req.body.id_transaction);
+        let transac = await retrievetransactionbyid(req.body.transaction.id_transaction);
         let id_user = await retrieve_id_user_token(req.body.token);
         let usu = await retrieveadmin(id_user);
         if(usu.admin == true){
@@ -102,7 +102,7 @@ async function new_transaction(req, res) {
       return res.status(422).json({ errors: errors.array() });
     }else{
 
-        let _id_transaccion = await addt(create_Object_transaction(req.body));
+        let _id_transaccion = await addt(create_Object_transaction(req.body.transaction));
         return res.status(200).send(JSON.stringify({message: "La transaccion se ha añadido correctamente ", _id_transaccion}));
 
     }

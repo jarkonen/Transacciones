@@ -23,13 +23,13 @@ const registerValidator = [
 
 const updateValidator = [
 
-    check('name').exists(),
-    check('id').exists(),
-    check('age').exists(),
-    check('email').isEmail(),
-    check('cp').exists(),
-    check('phone').exists(),
-    check('country').exists(),
+    check('user.name').exists(),
+    check('user.id').exists(),
+    check('user.age').exists(),
+    check('user.email').isEmail(),
+    check('user.cp').exists(),
+    check('user.phone').exists(),
+    check('user.country').exists(),
 
 ];
 
@@ -42,7 +42,7 @@ const authValidator = [
 
 const deleteValidator = [
 
-    check('id').exists(),
+    check('user.id').exists(),
 
 ];
 
@@ -54,23 +54,25 @@ async function delete_User(req, res) {
     if (!errors.isEmpty()) {
       return res.status(422).json({ errors: errors.array() });
     }else{
-
-        let usu = await retrieveadmin(req.body.id);
-        console.log(await all_Transactions_Validated(req.body.id));
-        if(all_Transactions_Validated(req.body.id) !== false){
+        let data = req.body.user;
+        console.log(req.body.user);
+        console.log(data);
+        let usu = await retrieveadmin(data.id);
+        console.log(await all_Transactions_Validated(data.id));
+        if(all_Transactions_Validated(data.id) !== false){
     
             if(usu.admin===true){
     
                 let respuesta = await wipe_out(usu.id);
                 await deletetransforclient(usu.id);
-                return res.status(400).send(JSON.stringify({message: "El usuario a sido eliminado", respuesta}));
+                return res.status(200).send(JSON.stringify({message: "El usuario a sido eliminado", respuesta}));
     
             }else{
     
-                let respuesta = await wipe_out(req.body.id);
+                let respuesta = await wipe_out(data.id);
                 //error que tengo que corregir UnhandledPromiseRejectionWarning: TypeError: (0 , _transactions2.deletetransforclient) is not a function
-                await deletetransforclient(req.body.id);
-                return res.status(400).send(JSON.stringify({message: "El usuario a sido eliminado", respuesta}));
+                await deletetransforclient(data.id);
+                return res.status(200).send(JSON.stringify({message: "El usuario a sido eliminado", respuesta}));
     
             }
         
@@ -104,7 +106,7 @@ async function update_user(req, res) {
                 return res.status(200).send(JSON.stringify({message:"Actualizado correctamente",respuesta}));
     
             }else{
-    
+
                 let respuesta = await commit(usuario);
                 return res.status(200).send(JSON.stringify({message:"Actualizado correctamente",respuesta}));
     
@@ -208,7 +210,7 @@ async function check_User(req, res) {
     
             }else{
     
-                return res.status(400).send(JSON.stringify({message: "Datos incorrectos porfavor compruebe su usuario y contraseña"}));
+                return res.status(400).send(JSON.stringify({message: "Datos incorrectos porfavor compruebe su usuario y contraseña7"}));
     
             }
     
