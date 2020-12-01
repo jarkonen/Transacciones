@@ -4,7 +4,7 @@ const scriptName = path.basename(__filename).replace('.js', '');
 
 module.exports = async it => {
 
-    const responseRegisterSuccessfully = request('POST', 'http://localhost:4000/users/new', {
+    const responseRegisterSuccessfully = request('POST', 'http://localhost:5000/users/new', {
         
         'json': {    
             'user': {
@@ -23,7 +23,7 @@ module.exports = async it => {
     it(scriptName + " responseRegisterSuccessfully", () => it.eq(responseRegisterSuccessfully.statusCode, 200));
     
     //verificando add_user
-    const responseRegisterDuplicateUser = request('POST', 'http://localhost:4000/users/new', {
+    const responseRegisterDuplicateUser = request('POST', 'http://localhost:5000/users/new', {
         'json': {    
             'user': {
 
@@ -41,7 +41,7 @@ module.exports = async it => {
 
     it(scriptName + " responseRegisterDuplicateUser", () => it.eq(responseRegisterDuplicateUser.statusCode, 400));
 
-    const responserRegisterWithIncompleteData = request('POST', 'http://localhost:4000/users/new', {
+    const responserRegisterWithIncompleteData = request('POST', 'http://localhost:5000/users/new', {
         
         'json': {    
             'user': {
@@ -59,7 +59,7 @@ module.exports = async it => {
 
     it(scriptName + " responserRegisterWithIncompleteData", () => it.eq(responserRegisterWithIncompleteData.statusCode, 422));
 
-    const responseAuthSuccessfully = request('POST', 'http://localhost:4000/auth', {
+    const responseAuthSuccessfully = request('POST', 'http://localhost:5000/auth', {
         'json': {    
             "user": {
               "name": "jarkonen", 
@@ -68,11 +68,11 @@ module.exports = async it => {
           }
       });
 
-    const token = JSON.parse(responseAuth.getBody()).token;
-    const id = JSON.parse(responseAuth.getBody()).respuesta._id;
+    const token = JSON.parse(responseAuthSuccessfully.getBody()).token;
+    const id = JSON.parse(responseAuthSuccessfully.getBody()).respuesta._id;
     it(scriptName + " responseAuthSuccessfully", () => it.eq(responseAuthSuccessfully.statusCode, 200));
 
-    const responseAuthFailed = request('POST', 'http://localhost:4000/auth', {
+    const responseAuthFailed = request('POST', 'http://localhost:5000/auth', {
         'json': {    
             "user": {
               "name": "jarko", 
@@ -83,7 +83,7 @@ module.exports = async it => {
 
       it(scriptName + " responseAuthFailed", () => it.eq(responseAuthFailed.statusCode, 400));
 
-    const responseUpdateUserSuccessfully = request('POST', 'http://localhost:4000/users/update', {
+    const responseUpdateUserSuccessfully = request('POST', 'http://localhost:5000/users/update', {
         'headers': {
             'Access-token': token
         },
@@ -104,7 +104,7 @@ module.exports = async it => {
 
     it(scriptName + " responseUpdateUserSuccessfully", () => it.eq(responseUpdateUserSuccessfully.statusCode, 200));
 
-    const responseUpdateValidateDataUser = request('POST', 'http://localhost:4000/users/update', {
+    const responseUpdateValidateDataUser = request('POST', 'http://localhost:5000/users/update', {
         'headers': {
             'Access-token': token
         },
@@ -124,7 +124,7 @@ module.exports = async it => {
 
     it(scriptName + " responseUpdateValidateDataUser", () => it.eq(responseUpdateValidateDataUser.statusCode, 422));
 
-    const responseDeleteUserSuccessfully = request('POST', 'http://localhost:4000/users/delete', {
+    const responseDeleteUserSuccessfully = request('POST', 'http://localhost:5000/users/delete', {
         'headers': {
             'Access-token': token
         },
@@ -139,7 +139,7 @@ module.exports = async it => {
 
     it(scriptName + " responseDeleteUserSuccessfully", () => it.eq(responseDeleteUserSuccessfully.statusCode, 200));
 
-    const responseDeleteValidateDataUser = request('POST', 'http://localhost:4000/users/delete', {
+    const responseDeleteValidateDataUser = request('POST', 'http://localhost:5000/users/delete', {
         'headers': {
             'Access-token': token
         },

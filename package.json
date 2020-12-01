@@ -28,6 +28,7 @@
     "mocha": "^8.2.1",
     "mongodb": "^3.6.2",
     "nodemailer": "^6.4.16",
+    "rxjs": "^6.6.3",
     "save": "^2.4.0",
     "sync-request": "^6.1.0"
   },

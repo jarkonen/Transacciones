@@ -1,19 +1,39 @@
 'use strict'
 
-import {conect, close_conection} from '../../services/mongo_service/conection';
+import {ConectDataBase, CloseConectionDataBase} from '../../services/mongo_service/conection';
 import MongoClient from 'mongodb';
+import {sendMail, RetriveUserById} from '../../../src/services/user_services/user.services';
+import { Observable } from "rxjs";
 
 //Create transaction
+
+var events = require('events');
+var em = new events.EventEmitter();
+var userEmail, opcion;
+
+async function rellenaobservable(idtransac){
+
+    userEmail = await retrieveuseremailtransactionbyid(idtransac);
+    return userEmail;
+
+}
+
+const observable = new Observable(observer => {
+
+    observer.next(sendMail(userEmail,opcion));
+    observer.complete();
+    
+}); 
 
 async function addt(transactions)
 {
 
-        let collection = await conect("APIRest", "Transactions");
+        let collection = await ConectDataBase("APIRest", "Transactions");
         try {
 
             console.log("El usuario " + transactions.id_sender + " y el usuario_recividor " + transactions.id_reciver + " tienen una transaccion pendiente de " + transactions.amount); 
             let variable = await collection.insertOne({"id_sender": transactions.id_sender, "id_reciver": transactions.id_reciver, "amount": transactions.amount, "validated": 0});
-            close_conection();
+            CloseConectionDataBase();
             return variable.insertedId;
             }catch (e) {console.error(e); return false;}
 }
@@ -23,7 +43,7 @@ async function addt(transactions)
 async function addJwt(id, jwt, fecha_token, time_exp_s)
     {
 
-        let collection = await conect("APIRest", "jwt");
+        let collection = await ConectDataBase("APIRest", "jwt");
         try { 
             await collection.insertOne({"id_user": id,"jwt": jwt,"date_creation": fecha_token,"time_exp_s": time_exp_s});
 
@@ -37,11 +57,11 @@ async function addJwt(id, jwt, fecha_token, time_exp_s)
 async function deletetransforclient(id)
 {
 
-        let collection = await conect("APIRest", "Transactions");
+        let collection = await ConectDataBase("APIRest", "Transactions");
         try {
             await collection.deleteOne({"id_sender": id});
             await collection.deleteOne({"id_reciver": id});
-            mclient.close();
+            CloseConectionDataBase();
             return true;  
             }
         catch(err)  {
@@ -53,32 +73,64 @@ async function deletetransforclient(id)
     
 }
 
-//Retrive transaction by id
-
-async function retrievetransactionbyid(id)
+async function retrieveuseremailtransactionbyid(id)
 {
         try {
-            let collection =  await conect("APIRest", "Transactions"); 
+            let collection =  await ConectDataBase("APIRest", "Transactions"); 
             let ObjectId = MongoClient.ObjectId; 
             var variable;
             variable = await collection.findOne({ "_id": ObjectId(id) });
-            close_conection();
+            let y = await RetriveUserById(variable.id_reciver);
+            CloseConectionDataBase();
+            return y.email;
+        }
+        catch( err )  {console.error(err)}
+
+}
+
+//Retrive transaction by id
+
+async function RetrieveTransactionById(id)
+{
+        try {
+            let collection =  await ConectDataBase("APIRest", "Transactions"); 
+            let ObjectId = MongoClient.ObjectId; 
+            var variable;
+            variable = await collection.findOne({ "_id": ObjectId(id) });
+            CloseConectionDataBase();
             return variable;
         }
         catch( err )  {console.error(err)}
 
 }
 
-//Validate transaction
+//Validate/reject transaction
 
 async function validate_transaction(transac)
 {
 
-        let collection = await conect("APIRest", "Transactions");
+        let collection = await ConectDataBase("APIRest", "Transactions");
         var ObjectId = MongoClient.ObjectId;
+        userEmail = await rellenaobservable(transac._id);
         try {
             await collection.updateOne({"_id": ObjectId(transac._id) }, {$set:{"validated": transac.validated}});
-            close_conection();
+            if(transac.validated == -1){
+                //em.emit('sendEmail', userEmail, "rechazada.");
+                //GetObservable(userEmail, "rechazada.");
+                opcion = "rechazada.";
+                observable.subscribe({
+                    error: err => console.error('error: ' + err),
+                    complete: () => console.log('Enviado!!!'),
+                    });
+            }else{
+                //em.emit('sendEmail', userEmail, "validada.");
+                opcion = "validada.";
+                observable.subscribe({
+                    error: err => console.error('error: ' + err),
+                    complete: () => console.log('Enviado!!!'),
+                    });
+            }
+            CloseConectionDataBase();
             return true;  
             }
         catch(err)  {
@@ -96,17 +148,28 @@ async function retrievetransactionporusuaio(id)
 {
 
         try {
-            let collection =  await conect("APIRest", "Transactions");
+            let collection =  await ConectDataBase("APIRest", "Transactions");
             let ObjectId = MongoClient.ObjectId; 
             var variable, v2;
             variable = await collection.find({"id_reciver": id}).toArray();
             v2 = await collection.find({"id_sender": id}).toArray();
             variable = variable.concat(v2);
-            close_conection();
+            CloseConectionDataBase();
             return variable;
         }
         catch( err )  {console.error(err)}
 
 }
 
-export {deletetransforclient, addJwt, addt, retrievetransactionbyid, validate_transaction, retrievetransactionporusuaio};
+em.on('sendEmail', sendMail);
+/*observable.subscribe({
+    next: x => em.on('sendEmail', sendMail)
+});
+const observable = new Observable(observer => {
+
+    observer.next(em.emit('sendEmail', sendMail));
+
+}); */
+
+
+export {deletetransforclient, addJwt, addt, RetrieveTransactionById, validate_transaction, retrievetransactionporusuaio};

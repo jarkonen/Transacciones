@@ -4,7 +4,7 @@ import {Users} from '../../modelos/users';
 import {comprueba, encriptar} from '../../services/security_services/security/cbrypt';
 import {all_Transactions_Validated} from '../controller.transactions/transactions.methods';
 const {check, validationResult} = require('express-validator');
-import {add, commit, wipe_out, retrieveadmin, check_mail, retrieve} from '../../services/user_services/user.services';
+import {add, commit, wipe_out, RetriveUserById, check_mail, retrieve} from '../../services/user_services/user.services';
 import {deletetransforclient, addJwt} from '../../services/transaction_services/transactions.services';
 
 const jwt = require('jsonwebtoken');
@@ -48,7 +48,7 @@ const deleteValidator = [
 
 //Borra un usuario
 
-async function delete_User(req, res) {
+async function Delete_User(req, res) {
 
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
@@ -57,7 +57,7 @@ async function delete_User(req, res) {
         let data = req.body.user;
         console.log(req.body.user);
         console.log(data);
-        let usu = await retrieveadmin(data.id);
+        let usu = await RetriveUserById(data.id);
         console.log(await all_Transactions_Validated(data.id));
         if(all_Transactions_Validated(data.id) !== false){
     
@@ -87,7 +87,7 @@ async function delete_User(req, res) {
 
 //Actualiza los datos de un usuario
 
-async function update_user(req, res) {
+async function update_User(req, res) {
 
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
@@ -98,7 +98,7 @@ async function update_user(req, res) {
         let usuario = create_Object_User(datos);
     
         try {
-            let usu2 = await retrieveadmin(usuario.id);
+            let usu2 = await RetriveUserById(usuario.id);
             console.log(usu2);
             if(usu2.admin===true){
     
@@ -272,4 +272,4 @@ function return_Formated_Data() {
 
 }
 
-export {check_User, add_User, update_user, delete_User, registerValidator, updateValidator, deleteValidator};
+export {check_User, add_User, update_User, Delete_User, registerValidator, updateValidator, deleteValidator};

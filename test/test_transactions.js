@@ -4,7 +4,7 @@ const scriptName = path.basename(__filename).replace('.js', '');
 
 module.exports = async it => {
 
-    const responseAuthUserOne = request('POST', 'http://localhost:4000/auth', {
+    const responseAuthUserOne = request('POST', 'http://localhost:5000/auth', {
         'json': {    
             "user": {
               "name": "jarko", 
@@ -16,7 +16,7 @@ module.exports = async it => {
     const token = JSON.parse(responseAuthUserOne.getBody()).token;
     const id_1 = JSON.parse(responseAuthUserOne.getBody()).respuesta._id;
 
-    const responseAuthUserTwo = request('POST', 'http://localhost:4000/auth', {
+    const responseAuthUserTwo = request('POST', 'http://localhost:5000/auth', {
         'json': {    
             "user": {
               "name": "Victoria", 
@@ -28,7 +28,7 @@ module.exports = async it => {
     const token2 = JSON.parse(responseAuthUserTwo.getBody()).token;
     const id_2 = JSON.parse(responseAuthUserTwo.getBody()).respuesta._id;
 
-    const responseNewTransaction = request ('POST', 'http://localhost:4000/transactions/new', {
+    const responseNewTransaction = request ('POST', 'http://localhost:5000/transactions/new', {
         'headers': {
             'Access-token': token
         },
@@ -47,9 +47,9 @@ module.exports = async it => {
 
 
     const id_t = JSON.parse(responseNewTransaction.getBody())._id_transaccion;
-    it(scriptName, () => it.eq(responseNewTransaction.statusCode, 200));
+    it(scriptName + " responseNewTransaction", () => it.eq(responseNewTransaction.statusCode, 200));
 
-    const responseValidateTransaction = request ('POST', 'http://localhost:4000/transactions/validate', {
+    const responseValidateTransaction = request ('POST', 'http://localhost:5000/transactions/validate', {
         'headers': {
             'Access-token': token2
         },
@@ -61,10 +61,13 @@ module.exports = async it => {
               }
           }
     );
-    it(scriptName, () => it.eq(responseValidateTransaction.statusCode, 200));
+    it(scriptName + " responseValidateTransaction", () => it.eq(responseValidateTransaction.statusCode, 200));
+    /*it('has no errors', (done) => {
+        const crash = (err) => { throw err }
+        observable.subscribe(noop, crash, done)
+      })*/
 
-    
-    const responseRejectTransaction = request ('POST', 'http://localhost:4000/transactions/reject', {
+    const responseRejectTransaction = request ('POST', 'http://localhost:5000/transactions/reject', {
         'headers': {
             'Access-token': token2
         },
@@ -76,5 +79,5 @@ module.exports = async it => {
               }
           }
     );
-    it(scriptName, () => it.eq(responseRejectTransaction.statusCode, 200));
+    it(scriptName + " responseRejectTransaction", () => it.eq(responseRejectTransaction.statusCode, 200));
 }

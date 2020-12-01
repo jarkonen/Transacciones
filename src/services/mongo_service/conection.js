@@ -6,7 +6,7 @@ require ('dotenv').config();
 const uri = "mongodb+srv://Jarkonen:"+process.env.MONGO+"@cluster0.anskl.mongodb.net/APIRest?retryWrites=true&w=majority";
 let mclient;
 
-async function conect(database, collection_Insert) {
+async function ConectDataBase(database, collection_Insert) {
 
         mclient = await MongoClient.connect(uri,
         { useNewUrlParser: true,
@@ -18,16 +18,9 @@ async function conect(database, collection_Insert) {
         
 }
 
-async function close_conection() {
+async function CloseConectionDataBase() {
     console.log("Closing conection to db");
     mclient.close();
 }
 
-async function return_objectid() {
-    
-    var ObjectId = MongoClient.ObjectId;
-    return ObjectId;
-
-}
-
-export{conect, close_conection,return_objectid};
+export{ConectDataBase, CloseConectionDataBase};

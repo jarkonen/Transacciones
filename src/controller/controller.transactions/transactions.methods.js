@@ -1,8 +1,8 @@
 'use strict'
 
 import {Transactions} from '../../modelos/transactions';
-import {addt, retrievetransactionbyid, validate_transaction, retrievetransactionporusuaio} from '../../../src/services/transaction_services/transactions.services';
-import {retrieveadmin, retrieve_id_user_token} from '../../../src/services/user_services/user.services';
+import {addt, RetrieveTransactionById, validate_transaction, retrievetransactionporusuaio} from '../../../src/services/transaction_services/transactions.services';
+import {RetriveUserById, RetriveUserIdByToken} from '../../../src/services/user_services/user.services';
 
 const {check, validationResult} = require('express-validator');
 
@@ -30,11 +30,11 @@ const rejectTransValidator = [
 
 //Rechaza una transaccion
 
-async function reject_Transaction(req, res) {
+async function Reject_Transaction(req, res) {
 
-    let transac = await retrievetransactionbyid(req.body.transaction.id_transaction);
-    let id_user = await retrieve_id_user_token(req.body.token);
-    let usu = await retrieveadmin(id_user);
+    let transac = await RetrieveTransactionById(req.body.transaction.id_transaction);
+    let id_user = await RetriveUserIdByToken(req.body.token);
+    let usu = await RetriveUserById(id_user);
     if(usu.admin == true){
 
         transac.validated = -1;
@@ -58,31 +58,31 @@ async function reject_Transaction(req, res) {
 
 //Valida una transaccion desde el recividor
 
-async function validate_Transaction(req, res) {
+async function Validate_Transaction(req, res) {
 
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
       return res.status(422).json({ errors: errors.array() });
     }else{
 
-        let transac = await retrievetransactionbyid(req.body.transaction.id_transaction);
-        let id_user = await retrieve_id_user_token(req.body.token);
-        let usu = await retrieveadmin(id_user);
+        let transac = await RetrieveTransactionById(req.body.transaction.id_transaction);
+        let id_user = await RetriveUserIdByToken(req.body.token);
+        let usu = await RetriveUserById(id_user);
         if(usu.admin == true){
     
             transac.validated = 1;
             let id_pasada = datos.id_pasada;
             if(id_pasada == transac.id_reciver){
-                let bol = await validate_transaction(transac);
-                return res.status(200).send(JSON.stringify({message : "La transaccion a sido validada ", bol}));
+                let BOL = await validate_transaction(transac);
+                return res.status(200).send(JSON.stringify({message : "La transaccion a sido validada ", BOL}));
             }
     
         }else{
     
             transac.validated = 1;
             if(id_user == transac.id_reciver){
-                let bol = await validate_transaction(transac);
-                return res.status(200).send(JSON.stringify({message : "La transaccion a sido validada ", bol}));
+                let BOL = await validate_transaction(transac);
+                return res.status(200).send(JSON.stringify({message : "La transaccion a sido validada ", BOL}));
             }else{
                 return res.status(200).send(JSON.stringify({message : "La transaccion no puede ser validada usuario incorrecto "}));
             }
@@ -95,7 +95,7 @@ async function validate_Transaction(req, res) {
 
 //Crea una nueva transaccion
 
-async function new_transaction(req, res) {
+async function New_Transaction(req, res) {
 
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
@@ -122,24 +122,24 @@ async function all_Transactions_Validated(id) {
 
     let d = await retrievetransactionporusuaio(id);
 
-    let bol = true;
+    let BOL = true;
     var x = d.length;
     for(var i = 0; i<x; i++){
         let transac = new Transactions();
         transac = d[i];
         console.log(transac.validated);
-        if(bol == true && transac.validated == 1){
+        if(BOL == true && transac.validated == 1){
             continue;
         }if(transac.validated == 0){
-            bol = false;
+            BOL = false;
         }else{
-            bol = false;
+            BOL = false;
         }
 
     }
-    console.log(bol);
-    return bol;
+    console.log(BOL);
+    return BOL;
     
 }
 
-export {new_transaction, validate_Transaction, reject_Transaction, all_Transactions_Validated, newTransValidator, validateTransValidator, rejectTransValidator};
+export {New_Transaction, Validate_Transaction, Reject_Transaction, all_Transactions_Validated, newTransValidator, validateTransValidator, rejectTransValidator};
